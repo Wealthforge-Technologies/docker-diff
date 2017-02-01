@@ -8,7 +8,7 @@ docker pull $IMAGE:$ENV1
 docker pull $IMAGE:$ENV2
 
 # if the number of lines output by the diff grabber is greater than 2, there is a difference, thus push promotee to their new office
-if (( $(./docker-diff $IMAGE:$ENV1 $IMAGE:$ENV2 | wc -l) > 2 )); then
+if (( $(docker-diff $IMAGE:$ENV1 $IMAGE:$ENV2 | wc -l) > 2 )); then
     echo hello
     docker tag $IMAGE:$ENV1 $IMAGE:$ENV2
     docker push $IMAGE:$ENV2

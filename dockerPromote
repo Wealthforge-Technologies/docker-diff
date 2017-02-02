@@ -4,20 +4,27 @@ export IMAGE=$1
 export ENV1=$2
 export ENV2=$3
 
+echo CLEANING
+docker rmi -f $IMAGE:$ENV1
+docker rmi -f $IMAGE:$ENV2
+echo CLEAN
+
 echo PULLING
 
 docker pull $IMAGE:$ENV1
 docker pull $IMAGE:$ENV2
 
 echo CHECKING
-# if the number of lines output by the diff grabber is greater than 2, there is a difference, thus push promotee to their new office
-if (( $(docker-diff $IMAGE:$ENV1 $IMAGE:$ENV2 | wc -l) > 2 )); then
+export DIGEST1=$(docker images --digests | grep $IMAGE | grep $ENV1 | awk '{print $3}')
+export DIGEST2=$(docker images --digests | grep $IMAGE | grep $ENV2 | awk '{print $3}')
+if [ "$DIGEST1" != "$DIGEST2" ]; then
     echo DIFF DETECTED PUSHING
+    docker rmi $IMAGE:$ENV2
     docker tag $IMAGE:$ENV1 $IMAGE:$ENV2
     docker push $IMAGE:$ENV2
     echo PUSHED
 fi
 echo CLEANING
-docker rmi -f $IMAGE:$ENV1
-docker rmi -f $IMAGE:$ENV2
+docker rmi $IMAGE:$ENV1
+docker rmi $IMAGE:$ENV2
 echo CLEAN

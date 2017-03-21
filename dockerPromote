@@ -15,8 +15,8 @@ docker pull $IMAGE:$ENV1
 docker pull $IMAGE:$ENV2
 
 echo CHECKING
-export DIGEST1=$(docker images --no-trunc | grep $IMAGE | grep $ENV1 | awk '{print $3}')
-export DIGEST2=$(docker images --no-trunc | grep $IMAGE | grep $ENV2 | awk '{print $3}')
+export DIGEST1=$(docker images --no-trunc | grep "^$IMAGE[[:space:]][[:space:]]*$ENV1[[:space:]].*$" | awk '{print $3}')
+export DIGEST2=$(docker images --no-trunc | grep "^$IMAGE[[:space:]][[:space:]]*$ENV2[[:space:]].*$" | awk '{print $3}')
 if [ "$DIGEST1" != "$DIGEST2" ]; then
     echo DIFF DETECTED PUSHING
     docker rmi $IMAGE:$ENV2
